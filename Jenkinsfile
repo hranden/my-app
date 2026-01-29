@@ -62,15 +62,15 @@ pipeline {
                         
                         
                         # Apply Kubernetes manifests
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
+                        /usr/local/bin/kubectl apply -f k8s/deployment.yaml
+                        /usr/local/bin/kubectl apply -f k8s/service.yaml
                         
                         # Wait for rollout
-                        kubectl rollout status deployment/nginx-deployment -n nginx
+                        /usr/local/bin/kubectl rollout status deployment/nginx-deployment -n nginx
                         
                         # Get service info
-                        kubectl get svc nginx-service -n nginx
-                        kubectl get deployment nginx-deployment -n nginx
+                        /usr/local/bin/kubectl get svc nginx-service -n nginx
+                        /usr/local/bin/kubectl get deployment nginx-deployment -n nginx
                             
                         # Show pods
                         echo "Pods:"
@@ -78,7 +78,7 @@ pipeline {
                             
                         # Show service info
                         echo "Service:"
-                        kubectl get svc nginx-service -n nginx
+                        /usr/local/bin/kubectl get svc nginx-service -n nginx
                     """
                 }
             }

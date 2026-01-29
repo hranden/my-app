@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKER_IMAGE = 'hranden/nginx:stable'
+        DOCKER_IMAGE = 'hranden/nginx:stable:${BUILD_NUMBER}'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     

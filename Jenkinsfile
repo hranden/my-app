@@ -67,7 +67,17 @@ pipeline {
                         kubectl rollout status deployment/nginx-deployment -n nginx
                         
                         # Get service info
-                        kubectl get svc nginx-service -n nginx                    """
+                        kubectl get svc nginx-service -n nginx
+                        kubectl get deployment nginx-deployment -n nginx
+                            
+                        # Show pods
+                        echo "Pods:"
+                        kubectl get pods -l app=nginx -n nginx
+                            
+                        # Show service info
+                        echo "Service:"
+                        kubectl get svc nginx-service -n nginx
+                    """
                 }
             }
         }

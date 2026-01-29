@@ -19,8 +19,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
-                        docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                        /usr/local/bin/docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
+                        /usr/local/bin/docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
                     """
                 }
             }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker run --rm ${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                        /usr/local/bin/docker run --rm ${DOCKER_IMAGE}:${BUILD_NUMBER} \
                         sh -c 'pip install pytest && pytest test_app.py -v'
                     """
                 }
@@ -42,8 +42,8 @@ pipeline {
                 script {
                     sh """
                         echo \$DOCKER_HUB_CREDENTIALS_PSW | docker login -u \$DOCKER_HUB_CREDENTIALS_USR --password-stdin
-                        docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                        docker push ${DOCKER_IMAGE}:latest
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:latest
                     """
                 }
             }

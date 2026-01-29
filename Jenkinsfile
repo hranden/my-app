@@ -42,8 +42,8 @@ pipeline {
                 script {
                     sh """
                         echo \$DOCKER_HUB_CREDENTIALS_PSW | docker login -u \$DOCKER_HUB_CREDENTIALS_USR --password-stdin
-                        #/usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                        /usr/local/bin/docker push ${DOCKER_IMAGE}:latest
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:stable
                     """
                 }
             }

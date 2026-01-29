@@ -60,7 +60,7 @@ pipeline {
                         # Update image in deployment
                         //sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx:stable|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' k8s/deployment.yaml
                         sed -i '' 's|YOUR_DOCKERHUB_USERNAME/nginx:stable|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' k8s/deployment.yaml
-                    """ 
+                     """ 
                         
                         # Apply Kubernetes manifests
                         kubectl apply -f k8s/deployment.yaml

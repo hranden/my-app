@@ -5,6 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
         DOCKER_IMAGE = 'hranden/nginx'
         KUBE_CONFIG = credentials('kubeconfig')
+        export PATH="/usr/local/bin:$PATH"
     }
     
     stages {

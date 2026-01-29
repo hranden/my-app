@@ -3,7 +3,6 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'hranden/nginx-app'
-        KUBE_CONFIG = credentials('kubeconfig')
     }
     
     stages {
@@ -17,32 +16,36 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh """
-                        mkdir -p ~/.kube
-                        cat \$KUBE_CONFIG > ~/.kube/config
-                        
-                        # Update image in deployment to use latest or specific tag
-                        sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx-app:latest|${DOCKER_IMAGE}:latest|g' k8s/deployment.yaml
-                        
-                        # Apply Kubernetes manifests
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
-                        
-                        # Wait for rollout to complete
-                        kubectl rollout status deployment/nginx-app
-                        
-                        # Show deployment status
-                        echo "Deployment Status:"
-                        kubectl get deployment nginx-app
-                        
-                        # Show pods
-                        echo "Pods:"
-                        kubectl get pods -l app=nginx-app
-                        
-                        # Show service info
-                        echo "Service:"
-                        kubectl get svc nginx-app-service
-                    """
+                    // Use withCredentials to properly handle the kubeconfig file
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                        sh """
+                            mkdir -p ~/.kube
+                            cp "\$KUBECONFIG_FILE" ~/.kube/config
+                            chmod 600 ~/.kube/config
+                            
+                            # Update image in deployment to use latest or specific tag
+                            sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx-app:latest|${DOCKER_IMAGE}:latest|g' k8s/deployment.yaml
+                            
+                            # Apply Kubernetes manifests
+                            kubectl apply -f k8s/deployment.yaml
+                            kubectl apply -f k8s/service.yaml
+                            
+                            # Wait for rollout to complete
+                            kubectl rollout status deployment/nginx-app
+                            
+                            # Show deployment status
+                            echo "Deployment Status:"
+                            kubectl get deployment nginx-app
+                            
+                            # Show pods
+                            echo "Pods:"
+                            kubectl get pods -l app=nginx-app
+                            
+                            # Show service info
+                            echo "Service:"
+                            kubectl get svc nginx-app-service
+                        """
+                    }
                 }
             }
         }

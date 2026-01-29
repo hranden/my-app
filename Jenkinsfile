@@ -1,7 +1,7 @@
+export PATH="/usr/local/bin:$PATH"
 pipeline {
     agent any
 
-     export PATH="/usr/local/bin:$PATH"
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')

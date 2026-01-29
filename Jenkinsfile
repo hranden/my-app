@@ -86,7 +86,7 @@ pipeline {
     
     post {
         always {
-            sh '/usr/locan/bin/docker logout'
+            sh '/usr/local/bin/docker logout'
             cleanWs()
         }
         success {

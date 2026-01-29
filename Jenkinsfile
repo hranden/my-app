@@ -74,7 +74,7 @@ pipeline {
                             
                         # Show pods
                         echo "Pods:"
-                        kubectl get pods -l app=nginx -n nginx
+                        /usr/local/bin/kubectl get pods -l app=nginx -n nginx
                             
                         # Show service info
                         echo "Service:"

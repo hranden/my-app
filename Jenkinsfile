@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKER_IMAGE = 'hranden/nginx:stable:${BUILD_NUMBER}'
+        DOCKER_IMAGE = 'hranden/nginx:stable:'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     
@@ -42,7 +42,7 @@ pipeline {
                 script {
                     sh """
                         echo \$DOCKER_HUB_CREDENTIALS_PSW | docker login -u \$DOCKER_HUB_CREDENTIALS_USR --password-stdin
-                        /usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        #/usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
                         /usr/local/bin/docker push ${DOCKER_IMAGE}:latest
                     """
                 }

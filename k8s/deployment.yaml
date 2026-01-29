@@ -3,10 +3,8 @@ kind: Deployment
 metadata:
   name: nginx-app
   namespace: nginx
-  labels:
-    app: nginx-app
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: nginx-app
@@ -19,26 +17,4 @@ spec:
       - name: nginx-app
         image: hranden/nginx-app:latest
         ports:
-        - containerPort: 8080
-        env:
-        - name: VERSION
-          value: "1.0"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 3
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
+        - containerPort: 80

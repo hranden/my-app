@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKER_IMAGE = 'hranden/alpine-app'
+        DOCKER_IMAGE = 'hranden/nginx:stable'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     
@@ -57,18 +57,17 @@ pipeline {
                         cat \$KUBE_CONFIG > ~/.kube/config
                         
                         # Update image in deployment
-                        sed -i 's|YOUR_DOCKERHUB_USERNAME/alpine-app:latest|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' k8s/deployment.yaml
+                        sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx:latest|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' k8s/deployment.yaml
                         
                         # Apply Kubernetes manifests
                         kubectl apply -f k8s/deployment.yaml
                         kubectl apply -f k8s/service.yaml
                         
                         # Wait for rollout
-                        kubectl rollout status deployment/alpine-app
+                        kubectl rollout status deployment/nginx-deployment -n nginx
                         
                         # Get service info
-                        kubectl get svc alpine-app-service
-                    """
+                        kubectl get svc nginx-service -n nginx                    """
                 }
             }
         }

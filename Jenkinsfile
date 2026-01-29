@@ -31,19 +31,19 @@ pipeline {
                             kubectl apply -f k8s/service.yaml
                             
                             # Wait for rollout to complete
-                            kubectl rollout status deployment/nginx -n nginx
+                            kubectl rollout status deployment/nginx-deployment -n nginx
                             
                             # Show deployment status
                             echo "Deployment Status:"
-                            kubectl get deployment nginx-app -n nginx
+                            kubectl get deployment nginx-deployment -n nginx
                             
                             # Show pods
                             echo "Pods:"
-                            kubectl get pods -l app=nginx-app -n nginx
+                            kubectl get pods -l app=nginx -n nginx
                             
                             # Show service info
                             echo "Service:"
-                            kubectl get svc nginx-app-service -n nginx
+                            kubectl get svc nginx-service -n nginx
                         """
                     }
                 }
@@ -55,8 +55,8 @@ pipeline {
         success {
             echo 'Deployment successful!'
             echo 'To check your deployment:'
-            echo '  kubectl get pods -l app=nginx-app -n nginx'
-            echo '  kubectl get svc nginx-app-service -n nginx'
+            echo '  kubectl get pods -l app=nginx -n nginx'
+            echo '  kubectl get svc nginx-service -n nginx'
         }
         failure {
             echo 'Deployment failed. Check logs for details.'

@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = 'nginx:latest'
+        DOCKER_IMAGE = 'hranden/nginx-app'
     }
     
     stages {
@@ -24,7 +24,7 @@ pipeline {
                             chmod 600 ~/.kube/config
                             
                             # Update image in deployment to use latest or specific tag
-                            #sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx-app:latest|${DOCKER_IMAGE}:latest|g' k8s/deployment.yaml
+                            sed -i 's|YOUR_DOCKERHUB_USERNAME/nginx-app:latest|${DOCKER_IMAGE}:latest|g' k8s/deployment.yaml
                             
                             # Apply Kubernetes manifests
                             kubectl apply -f k8s/deployment.yaml

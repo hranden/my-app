@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: alpine-app
-        image: YOUR_DOCKERHUB_USERNAME/alpine-app:latest
+        image: hranden/alpine-app:latest
         ports:
         - containerPort: 8080
         env:

@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKER_IMAGE = 'YOUR_DOCKERHUB_USERNAME/alpine-app'
+        DOCKER_IMAGE = 'hranden/alpine-app'
         KUBE_CONFIG = credentials('kubeconfig')
     }
     
@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
+                    url: 'https://github.com/hranden/my-app.git'
             }
         }
         

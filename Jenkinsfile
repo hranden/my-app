@@ -31,7 +31,7 @@ pipeline {
                             kubectl apply -f k8s/service.yaml
                             
                             # Wait for rollout to complete
-                            kubectl rollout status deployment/nginx-app -n nginx
+                            kubectl rollout status deployment/nginx -n nginx
                             
                             # Show deployment status
                             echo "Deployment Status:"

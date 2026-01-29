@@ -1,4 +1,3 @@
-export PATH="/usr/local/bin:$PATH"
 pipeline {
     agent any
 
@@ -87,7 +86,7 @@ pipeline {
     
     post {
         always {
-            sh 'docker logout'
+            sh '/usr/locan/bin/docker logout'
             cleanWs()
         }
         success {

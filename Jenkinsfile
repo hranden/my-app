@@ -20,7 +20,7 @@ pipeline {
                 script {
                     sh """
                         /usr/local/bin/docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
-                        /usr/local/bin/docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:latest
+                        /usr/local/bin/docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:stable
                     """
                 }
             }

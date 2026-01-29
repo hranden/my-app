@@ -15,7 +15,7 @@ spec:
         app: nginx-app
     spec:
       containers:
-      - name: alpine-app
+      - name: nginx-app
         image: hranden/nginx-app:latest
         ports:
         - containerPort: 8080

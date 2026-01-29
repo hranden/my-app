@@ -87,7 +87,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:stable
+        image: hranden/nginx:stable
         ports:
         - containerPort: 80
         resources:

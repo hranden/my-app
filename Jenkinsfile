@@ -31,7 +31,7 @@ pipeline {
                 script {
                     sh """
                         /usr/local/bin/docker run --rm ${DOCKER_IMAGE}:${BUILD_NUMBER} \
-                        sh -c 'pip install pytest && pytest test_app.py -v'
+                        sh -c 'pip3 install pytest && pytest test_app.py -v'
                     """
                 }
             }

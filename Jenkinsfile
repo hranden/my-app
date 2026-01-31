@@ -27,36 +27,41 @@ pipeline {
             }
         }
         
-        stage('Run Tests') {
+        stage('Test Container') {
             steps {
                 script {
                     try {
-                        // Run the container in detached mode
-                        def container = dockerImage.run("-d --name test-container-${env.BUILD_ID}")
-                        
-                        // Wait a bit for the container to start
-                        sleep(time: 10, unit: 'SECONDS')
-                        
-                        // Check if container is running
-                        def containerStatus = sh(
-                            script: "/usr/local/bin/docker inspect -f '{{.State.Running}}' test-container-${env.BUILD_ID}",
-                            returnStdout: true
-                        ).trim()
-                        
-                        if (containerStatus != 'true') {
-                            error "Container failed to start"
-                        }
-                        
-                        echo "Container is running successfully"
-                        
-                    } finally {
-                        // Always stop and remove the container
-                        sh "/usr/local/bin/docker stop test-container-${env.BUILD_ID} || true"
-                        sh "/usr/local/bin/docker rm test-container-${env.BUILD_ID} || true"
-                    }
+                // Run the container using the image you just built
+                sh "/usr/local/bin/docker run -d --name test-container-${BUILD_NUMBER} ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                
+                // Wait for container to start
+                sleep(time: 10, unit: 'SECONDS')
+                
+                // Check if container is still running
+                def containerStatus = sh(
+                    script: "/usr/local/bin/docker inspect -f '{{.State.Running}}' test-container-${BUILD_NUMBER}",
+                    returnStdout: true
+                ).trim()
+                
+                if (containerStatus != 'true') {
+                    error "Container failed to start or crashed"
                 }
+                
+                // Optional: Check logs for startup errors
+                sh "/usr/local/bin/docker logs test-container-${BUILD_NUMBER}"
+                
+                echo "Container test passed - image is healthy"
+                
+            } catch (Exception e) {
+                echo "Container test failed: ${e.message}"
+                throw e
+            } finally {
+                // Always cleanup - stop and remove the test container
+                sh "/usr/local/bin/docker stop test-container-${BUILD_NUMBER} || true"
+                sh "/usr/local/bin/docker rm test-container-${BUILD_NUMBER} || true"
             }
         }
+
         
         stage('Push to Docker Hub') {
             steps {

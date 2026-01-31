@@ -1,1 +1,120 @@
+pipeline {
+    agent any
 
+    
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKER_IMAGE = 'hranden/nginx'
+        KUBE_CONFIG = credentials('kubeconfig')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/hranden/my-app.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                        /usr/local/bin/docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} .
+                        /usr/local/bin/docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} ${DOCKER_IMAGE}:stable
+                    """
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                script {
+                    try {
+                        // Run the container in detached mode
+                        def container = dockerImage.run("-d --name test-container-${env.BUILD_ID}")
+                        
+                        // Wait a bit for the container to start
+                        sleep(time: 10, unit: 'SECONDS')
+                        
+                        // Check if container is running
+                        def containerStatus = sh(
+                            script: "/usr/local/bin/docker inspect -f '{{.State.Running}}' test-container-${env.BUILD_ID}",
+                            returnStdout: true
+                        ).trim()
+                        
+                        if (containerStatus != 'true') {
+                            error "Container failed to start"
+                        }
+                        
+                        echo "Container is running successfully"
+                        
+                    } finally {
+                        // Always stop and remove the container
+                        sh "/usr/local/bin/docker stop test-container-${env.BUILD_ID} || true"
+                        sh "/usr/local/bin/docker rm test-container-${env.BUILD_ID} || true"
+                    }
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    sh """
+                        echo \$DOCKER_HUB_CREDENTIALS_PSW | /usr/local/bin/docker login -u \$DOCKER_HUB_CREDENTIALS_USR --password-stdin
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        /usr/local/bin/docker push ${DOCKER_IMAGE}:stable
+                    """
+                }
+            }
+        }
+        
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh """
+                        mkdir -p ~/.kube
+                        cat \$KUBE_CONFIG > ~/.kube/config
+                        
+                        # Update image in deployment
+                        sed -i '' 's|YOUR_DOCKERHUB_USERNAME/nginx:stable|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' k8s/deployment.yaml
+                        
+                        
+                        # Apply Kubernetes manifests
+                        /usr/local/bin/kubectl apply -f k8s/deployment.yaml
+                        /usr/local/bin/kubectl apply -f k8s/service.yaml
+                        
+                        # Wait for rollout
+                        /usr/local/bin/kubectl rollout status deployment/nginx-deployment -n nginx
+                        
+                        # Get service info
+                        /usr/local/bin/kubectl get svc nginx-service -n nginx
+                        /usr/local/bin/kubectl get deployment nginx-deployment -n nginx
+                            
+                        # Show pods
+                        echo "Pods:"
+                        /usr/local/bin/kubectl get pods -l app=nginx -n nginx
+                            
+                        # Show service info
+                        echo "Service:"
+                        /usr/local/bin/kubectl get svc nginx-service -n nginx
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh '/usr/local/bin/docker logout'
+            cleanWs()
+        }
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
+        }
+    }
+}

@@ -1,3 +1,4 @@
+# nginx-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,7 +8,20 @@ spec:
   selector:
     app: nginx
   ports:
-  - name: http
-    port: 80
-    nodePort: 30080
-  type: NodePort
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: nginx-service
+#  namespace: nginx
+#spec:
+#  selector:
+#    app: nginx
+#  ports:
+#  - name: http
+#    port: 80
+#    nodePort: 30080
+#  type: NodePort
